@@ -284,7 +284,8 @@ print("uniqueproteins_num")
 print(uniqueproteins_num)
 
 
-write.table(PO972kggPO1063HLMkgg_UbPep_Data, file="KeGGpeptide_SupplementalTable_2.txt", sep="\t", quote=FALSE, na="NA", dec=".", row.names=TRUE, col.names=NA)
+#write the output to an text file
+write.table(PO972kggPO1063HLMkgg_UbPep_Data, file="KeGGpeptide_SupplementalTable_2_0416.txt", sep="\t", quote=FALSE, na="NA", dec=".", row.names=TRUE, col.names=NA)
 
 
 ##venn diagram of number of Ub peptides for PO972, PO1063HLM and common
@@ -292,7 +293,7 @@ plotpairwisevenn(PO972kgg_All_UbPep_Num,
                  PO1063HLMkgg_All_UbPep_Num,
 				 PO972kggPO1063HLMkgg_All_Int_UbPep_Num,
 				 "", "", "mediumpurple", "mediumpurple1", "mediumpurple", "mediumpurple1", TRUE,
-				 "PO972kgg-PO1063HLMkgg_NumUbPeptides_VennDiagram.pdf")
+				 "PO972kgg-PO1063HLMkgg_NumUbPeptides_VennDiagram_0416.pdf")
 ##end venn diagram of number of Ub peptides for PO972, PO1063HLM and common
 
 
@@ -313,9 +314,9 @@ KeGGdata$IntensityHLog2Norm.PO972kgg_4hr.zscore<-apply(KeGGdata, MARGIN=1, FUN=f
 KeGGdata$IntensityHLog2Norm.PO972kggPO1063kggHLM.avgzscore<-apply(KeGGdata, MARGIN=1, FUN=function(x) mean(as.numeric(c(x[["IntensityHLog2Norm.PO1063kgg_HLM.zscore"]],x[["IntensityHLog2Norm.PO972kgg_0hr.zscore"]])),na.rm=TRUE))
 ##write output of peptide level KeGG data analysis
 #directory to which output is written
-analysisdir<-"./"
+analysisdir<-"./newkeggtest/"
 #write output
-write.table(KeGGdata, file=file.path(".", analysisdir, "KeGGpeptideData_PositionBasedHLRatioAndIntensityQuantifications_PO1063-PO972_TEST.txt"), sep="\t", quote=FALSE, na="NA", dec=".", row.names=TRUE, col.names=NA)
+write.table(KeGGdata, file=file.path(".", analysisdir, "KeGGpeptideData_PositionBasedHLRatioAndIntensityQuantifications_PO1063-PO972_TEST_0416.txt"), sep="\t", quote=FALSE, na="NA", dec=".", row.names=TRUE, col.names=NA)
 
 PO1063kggHLMPO972kgg0hr_UbKeGGLysines_AvgZscore<-c(KeGGdata["P62983_6","IntensityHLog2Norm.PO972kggPO1063kggHLM.avgzscore"],
                                                    KeGGdata["P62983_11","IntensityHLog2Norm.PO972kggPO1063kggHLM.avgzscore"],
@@ -325,7 +326,7 @@ PO1063kggHLMPO972kgg0hr_UbKeGGLysines_AvgZscore<-c(KeGGdata["P62983_6","Intensit
 												   KeGGdata["P62983_48","IntensityHLog2Norm.PO972kggPO1063kggHLM.avgzscore"],
 												   KeGGdata["P62983_63","IntensityHLog2Norm.PO972kggPO1063kggHLM.avgzscore"])
 UbKeGGLysinesNames<-c("K6", "K11", "K27", "K29", "K33", "K48", "K63")
-pdf(file.path(".", analysisdir, "UbiquitinKeGGLysines_PO972kgg0hrPO1063kggHLM_IntensityHzscore_barplot.pdf"), height=5, width=7)
+pdf(file.path(".", analysisdir, "UbiquitinKeGGLysines_PO972kgg0hrPO1063kggHLM_IntensityHzscore_barplot_0416.pdf"), height=5, width=7)
 par(mar=c(5,6,4,2)+0.1)
 ymin<-0.0
 ymax<-ceiling(max(PO1063kggHLMPO972kgg0hr_UbKeGGLysines_AvgZscore, na.rm=TRUE))
@@ -347,7 +348,7 @@ PO1063kggHLMPO972kgg0hr_UbKeGGLysines_AvgHLratio<-c(KeGGdata["P62983_6","HLratio
 												    KeGGdata["P62983_48","HLratioLog2Norm.PO0163kggHLMPO972kgg4diff0_AvgHLratio"],
 												    KeGGdata["P62983_63","HLratioLog2Norm.PO0163kggHLMPO972kgg4diff0_AvgHLratio"])
 UbKeGGLysinesNames<-c("K6", "K11", "K27", "K29", "K33", "K48", "K63")
-pdf(file.path(".", analysisdir, "UbiquitinKeGGLysines_PO972kgg0hrPO1063kggHLM_HLratio_barplot.pdf"), height=5, width=7)
+pdf(file.path(".", analysisdir, "UbiquitinKeGGLysines_PO972kgg0hrPO1063kggHLM_HLratio_barplot_0416.pdf"), height=5, width=7)
 par(mar=c(5,6,4,2)+0.1)
 #ymin<-floor(min(PO1063kggHLMPO972kgg0hr_UbKeGGLysines_AvgHLratio, na.rm=TRUE))
 #ymax<-ceiling(max(PO1063kggHLMPO972kgg0hr_UbKeGGLysines_AvgHLratio, na.rm=TRUE))
@@ -360,39 +361,9 @@ axis(2,at=c(seq(ymin,ymax,by=0.1)),labels=T,col="black",cex.axis=1.5,lwd=3,tck=-
 #mtext("log2 fold change",2,line=2.75,cex=1.5)
 dev.off()
 
-stop("Z")
 
 #####quantify protein-based ubiquitylation
 
-#function to weight means by either intensity or count
-weight <- function(x,y)
-{
-
-	if ( is.na(x) | is.na(y) ){
-		wtval<-NA
-	}else{
-		wtval<-x*y
-	}
-
-	return(wtval)
-
-}
-#end weight function
-
-#function to weight means by either intensity or count, normalized to total for that protein
-normweight <- function(x,y,z)
-{
-
-	if ( is.na(x) | is.na(y) ){
-		wtval<-NA
-	}else{
-		wtval<-x*(y/z)
-	}
-
-	return(wtval)
-
-}
-#end weight function
 
 ##unique protein ids in dataset
 proteinIDs<-unique(KeGGdata$protID, incompariables=FALSE)
@@ -421,7 +392,8 @@ for ( i in 1:length(experiments) )
 	intensitylog2id<-paste("IntensityLog2.", expID, sep="")
 	intensitywtnormLHid<-paste("intensityweightednormHLratio.", expID, sep="")
 
-
+	#####remove unnecessary after testing
+	intensitywtnormLHidbase10<-paste("intensityweightednormHLratiobase10.", expID, sep="")
 
 	#evaluate all proteins identified in the combined dataset
 	#parse each unique protein id
@@ -508,28 +480,31 @@ for ( i in 1:length(experiments) )
 			colid<-paste("maxintenpepratio.", expID, sep="")
 			KeGGProteinData[tempprot,colid]<-maxintenratio
 
-			#intensity weighted mean
-			#calc total intensity
-			totintensity<-sum(tempdata[,intensitylog2id], na.rm=TRUE)
-			#weight ratios by by raw intensity
-			intensityweighted<-apply(tempdata, MARGIN=1, FUN=function(x) weight(as.numeric(x[[normLHid]]),as.numeric(x[[intensitylog2id]])))
-			#populate temp data frame with weighted intensity
-			tempdata[,intensitywtnormLHid]<-intensityweighted
-			#calc intensity weighted mean
-			intensityweightedmean<-sum(tempdata[,intensitywtnormLHid], na.rm=TRUE)/totintensity
+			#print(tempdata)
 
-			###########weight by intensity norm to total intensity
-			##########totintensity<-sum(tempdata[,intensitylog2id], na.rm=TRUE)
-			##########intensityweighted<-apply(tempdata, MARGIN=1, FUN=function(x) normweight(as.numeric(x[[normLHid]]),as.numeric(x[[intensitylog2id]]),as.numeric(totintensity)))
-			###########populate temp data frame with weighted intensity
-			##########tempdata[,intensitywtnormLHid]<-intensityweighted
-			###########calc weighted mean
-			##########intensityweightedmean<-mean(tempdata[,intensitywtnormLHid], na.rm=TRUE)
-			
+
+			######intensity weighted mean based on Log2 values
+			######intensity Log2 values should be non-normalized
+			#####wtfcdata<-tempdata[,c(normLHid,intensitylog2id)]
+			#####colnames(wtfcdata) <- c("foldchange", "intensity")
+			#####intensityweightedmean<-CalcKeGGIntWtFc(wtfcdata)
+			######populate protein data frame
+			#####colid<-paste("intensityweightedmeanratio.", expID, sep="")
+			#####KeGGProteinData[tempprot,colid]<-intensityweightedmean
+
+			#intensity weighted mean based on base10 values
+			#Log2 intensity and fold change must be converted to base10
+			#convert weighted mean fold change back to Log2
+			tempdata$base10intensity<-apply(tempdata, MARGIN=1, FUN=function(x) InvLog(x[[intensitylog2normid]],2))
+			tempdata$base10foldchange<-apply(tempdata, MARGIN=1, FUN=function(x) InvLog(x[[normLHid]],2))
+			wtfcdata<-tempdata[,c("base10foldchange","base10intensity")]
+			colnames(wtfcdata) <- c("foldchange", "intensity")
+			intensityweightedmeanbase10<-CalcKeGGIntWtFc(wtfcdata)
+			intensityweightedmeanbase2<-log(intensityweightedmeanbase10,2)
 			#populate protein data frame
 			colid<-paste("intensityweightedmeanratio.", expID, sep="")
-			KeGGProteinData[tempprot,colid]<-intensityweightedmean
-			#print(intensityweightedmean)
+			KeGGProteinData[tempprot,colid]<-intensityweightedmeanbase2
+
 
 		}else{
 		
@@ -570,8 +545,9 @@ KeGGProteinData$intensityweightedmeanratio.PO972kgg_4diff1<-apply(KeGGProteinDat
 
 
 ##write table of protein Ub quantification data
-write.table(KeGGProteinData, file=file.path(".", analysisdir, "KeGGproteinData_PeptideBasedTotalProteinQuantification_PO1063-PO972_0810_NewWeighting_1203.txt"), sep="\t", quote=FALSE, na="NA", dec=".", row.names=TRUE, col.names=NA)
+write.table(KeGGProteinData, file=file.path(".", analysisdir, "KeGGproteinData_PeptideBasedTotalProteinQuantification_PO1063-PO972_0810_NewWeighting_0417_TEST.txt"), sep="\t", quote=FALSE, na="NA", dec=".", row.names=TRUE, col.names=NA)
 
+stop("TTTTTTTTTT")
 
 print("PO972kgg vs PO1063HLMkgg correlations for 0-4hr fold change for ubiquitinated peptides")
 ubpepcortest_UbFc_pearson<-cor.test(KeGGdata$HLratioLog2Norm.PO972kgg_4diff0, KeGGdata$HLratioLog2Norm.PO1063kgg_HLM, alternative="two.sided", method="pearson", conf.level = 0.95)
